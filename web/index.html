@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroTradeAI Data Scraper Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>NeuroTradeAI Data Scraper</h1>
+            <p>Real-time Market Data Dashboard</p>
+            <div>
+                WebSocket Status: <span id="ws-status" class="status disconnected">Disconnected</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h4>Connection</h4>
+                <button class="btn btn-primary" onclick="connectWebSocket()">Connect</button>
+                <button class="btn btn-danger" onclick="disconnectWebSocket()">Disconnect</button>
+                <button class="btn btn-success" onclick="subscribeToData()">Subscribe to Data</button>
+            </div>
+            
+            <div class="control-group">
+                <h4>Data Sources</h4>
+                <label class="toggle">
+                    <input type="checkbox" id="finnhub-toggle" checked onchange="toggleDataSource('finnhub', this.checked)">
+                    <span class="slider"></span>
+                    Finnhub Market Data
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="news-toggle" checked onchange="toggleDataSource('news', this.checked)">
+                    <span class="slider"></span>
+                    News Feed
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="edgar-toggle" checked onchange="toggleDataSource('edgar', this.checked)">
+                    <span class="slider"></span>
+                    SEC Filings
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <h4>System</h4>
+                <button class="btn btn-primary" onclick="showKeyManagement()">Manage API Keys</button>
+                <button class="btn btn-secondary" onclick="loadInitialData()">Refresh Data</button>
+                <button class="btn btn-warning" onclick="showSystemSettings()">System Settings</button>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="card">
+                <h3>Live Prices</h3>
+                <div id="price-grid" class="price-grid">
+                    <!-- Price data will be populated here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent News</h3>
+                <div id="news">
+                    <!-- News data will be populated here -->
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Recent Filings</h3>
+                <div id="filings">
+                    <!-- Filing data will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>System Metrics</h3>
+            <div id="metrics" class="metrics">
+                <!-- Metrics will be populated here -->
+            </div>
+        </div>
+
+        <!-- API Key Management Modal -->
+        <div id="keyModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="hideKeyManagement()">&times;</span>
+                <h2>API Key Management</h2>
+                <div id="keyStatus">
+                    <!-- Key status will be populated here -->
+                </div>
+                <div id="keyForms">
+                    <!-- Key forms will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- System Settings Modal -->
+        <div id="systemModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close" onclick="hideSystemSettings()">&times;</span>
+                <h2>System Settings</h2>
+                
+                <div class="settings-section">
+                    <h3>Data Collection</h3>
+                    <div class="setting-item">
+                        <label for="polling-interval">Polling Interval (seconds):</label>
+                        <input type="number" id="polling-interval" value="60" min="10" max="300">
+                    </div>
+                    <div class="setting-item">
+                        <label for="max-symbols">Max Symbols:</label>
+                        <input type="number" id="max-symbols" value="50" min="1" max="100">
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Storage</h3>
+                    <div class="setting-item">
+                        <label for="retention-days">Data Retention (days):</label>
+                        <input type="number" id="retention-days" value="365" min="30" max="1095">
+                    </div>
+                    <div class="setting-item">
+                        <label for="auto-cleanup">Auto Cleanup:</label>
+                        <input type="checkbox" id="auto-cleanup" checked>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Alerts</h3>
+                    <div class="setting-item">
+                        <label for="error-alerts">Error Alerts:</label>
+                        <input type="checkbox" id="error-alerts" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="rate-limit-alerts">Rate Limit Alerts:</label>
+                        <input type="checkbox" id="rate-limit-alerts" checked>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="saveSystemSettings()">Save Settings</button>
+                    <button class="btn btn-secondary" onclick="hideSystemSettings()">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>

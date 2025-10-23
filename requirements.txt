@@ -1,0 +1,30 @@
+# NeuroTradeAI - Core Dependencies
+# Real-time trading data scraper requirements
+
+# Web Framework
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+
+# HTTP Client
+aiohttp>=3.8.0
+websockets>=11.0
+
+# Data Processing
+pyarrow>=10.0.0
+pandas>=1.5.0
+
+# Security
+cryptography>=40.0.0
+
+# Web Scraping
+beautifulsoup4>=4.11.0
+
+# Rate Limiting
+aiolimiter>=1.0.0
+
+# Configuration
+python-dotenv>=1.0.0
+
+# HTTP Libraries
+requests>=2.28.0
+urllib3>=1.26.0

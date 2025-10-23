@@ -1,0 +1,18 @@
+# Minimal requirements for initial setup
+# This avoids pandas/pyarrow compilation issues
+
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+aiohttp>=3.8.0
+websockets>=11.0
+cryptography>=40.0.0
+beautifulsoup4>=4.11.0
+aiolimiter>=1.0.0
+python-dotenv>=1.0.0
+
+# Additional dependencies for adapters
+requests>=2.28.0
+urllib3>=1.26.0
+
+# Use JSON instead of Parquet for initial version
+# Will add pandas/pyarrow later when needed

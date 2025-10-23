@@ -1,0 +1,24 @@
+# Windows-optimized requirements with pre-compiled wheels
+# Use this if the main requirements.txt fails on Windows
+
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+aiohttp>=3.8.0
+websockets>=11.0
+
+# Use pre-compiled wheels for Windows
+pyarrow>=10.0.0; platform_system=="Windows"
+pandas>=1.5.0; platform_system=="Windows"
+
+# Alternative: Use conda-forge packages if pip fails
+# conda install -c conda-forge pyarrow pandas
+
+cryptography>=40.0.0
+beautifulsoup4>=4.11.0
+aiolimiter>=1.0.0
+python-dotenv>=1.0.0
+requests>=2.28.0
+urllib3>=1.26.0
+
+# Additional Windows-specific packages
+pywin32>=306; platform_system=="Windows"
