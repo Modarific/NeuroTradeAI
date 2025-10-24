@@ -51,10 +51,15 @@ async def lifespan(app: FastAPI):
     logger.info("Starting NeuroTradeAI Data Scraper...")
     
     # Setup credential vault
-    vault = setup_vault_interactive(KEYS_PATH)
-    if not vault:
-        logger.error("Failed to setup credential vault")
-        sys.exit(1)
+    # Skip vault setup in test environment
+    if os.getenv("TESTING") == "true":
+        vault = None
+        logger.info("Skipping vault setup in test environment")
+    else:
+        vault = setup_vault_interactive(KEYS_PATH)
+        if not vault:
+            logger.error("Failed to setup credential vault")
+            sys.exit(1)
     
     # Set vault for key management API
     set_vault(vault)
@@ -100,6 +105,12 @@ app = FastAPI(
 # Include routers
 app.include_router(router, prefix="/api/v1")
 app.include_router(key_router, prefix="/api/v1")
+
+# Include trading and backtesting routes
+from app.api.trading_routes import router as trading_router
+from app.api.backtest_routes import router as backtest_router
+app.include_router(trading_router, prefix="")
+app.include_router(backtest_router, prefix="")
 
 # Add WebSocket endpoint
 app.add_api_websocket_route("/stream", websocket_endpoint)

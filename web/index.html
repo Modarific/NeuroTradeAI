@@ -3,148 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroTradeAI Data Scraper Dashboard</title>
+    <title>NeuroTradeAI - Advanced Trading System</title>
     <link rel="stylesheet" href="/static/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>NeuroTradeAI Data Scraper</h1>
-            <p>Real-time Market Data Dashboard</p>
-            <div>
-                WebSocket Status: <span id="ws-status" class="status disconnected">Disconnected</span>
+    <!-- Navigation Header -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-brain"></i>
+                <span>NeuroTradeAI</span>
             </div>
-        </div>
-
-        <div class="controls">
-            <div class="control-group">
-                <h4>Connection</h4>
-                <button class="btn btn-primary" onclick="connectWebSocket()">Connect</button>
-                <button class="btn btn-danger" onclick="disconnectWebSocket()">Disconnect</button>
-                <button class="btn btn-success" onclick="subscribeToData()">Subscribe to Data</button>
-            </div>
-            
-            <div class="control-group">
-                <h4>Data Sources</h4>
-                <label class="toggle">
-                    <input type="checkbox" id="finnhub-toggle" checked onchange="toggleDataSource('finnhub', this.checked)">
-                    <span class="slider"></span>
-                    Finnhub Market Data
-                </label>
-                <label class="toggle">
-                    <input type="checkbox" id="news-toggle" checked onchange="toggleDataSource('news', this.checked)">
-                    <span class="slider"></span>
-                    News Feed
-                </label>
-                <label class="toggle">
-                    <input type="checkbox" id="edgar-toggle" checked onchange="toggleDataSource('edgar', this.checked)">
-                    <span class="slider"></span>
-                    SEC Filings
-                </label>
-            </div>
-            
-            <div class="control-group">
-                <h4>System</h4>
-                <button class="btn btn-primary" onclick="showKeyManagement()">Manage API Keys</button>
-                <button class="btn btn-secondary" onclick="loadInitialData()">Refresh Data</button>
-                <button class="btn btn-warning" onclick="showSystemSettings()">System Settings</button>
-            </div>
-        </div>
-
-        <div class="dashboard">
-            <div class="card">
-                <h3>Live Prices</h3>
-                <div id="price-grid" class="price-grid">
-                    <!-- Price data will be populated here -->
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Recent News</h3>
-                <div id="news">
-                    <!-- News data will be populated here -->
-                </div>
-            </div>
-
-            <div class="card">
-                <h3>Recent Filings</h3>
-                <div id="filings">
-                    <!-- Filing data will be populated here -->
+            <div class="nav-status">
+                <div class="status-indicator" id="connection-status">
+                    <i class="fas fa-circle"></i>
+                    <span>Connecting...</span>
                 </div>
             </div>
         </div>
+    </nav>
 
-        <div class="card">
-            <h3>System Metrics</h3>
-            <div id="metrics" class="metrics">
-                <!-- Metrics will be populated here -->
+    <!-- Main Dashboard -->
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3><i class="fas fa-chart-line"></i> Trading Dashboard</h3>
             </div>
-        </div>
+            <nav class="sidebar-nav">
+                <a href="#overview" class="nav-item active" data-section="overview">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#trading" class="nav-item" data-section="trading">
+                    <i class="fas fa-trading"></i>
+                    <span>Trading Panel</span>
+                </a>
+                <a href="#backtesting" class="nav-item" data-section="backtesting">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Backtesting</span>
+                </a>
+                <a href="#analytics" class="nav-item" data-section="analytics">
+                    <i class="fas fa-analytics"></i>
+                    <span>Analytics</span>
+                </a>
+                <a href="#settings" class="nav-item" data-section="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </nav>
+        </aside>
 
-        <!-- API Key Management Modal -->
-        <div id="keyModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close" onclick="hideKeyManagement()">&times;</span>
-                <h2>API Key Management</h2>
-                <div id="keyStatus">
-                    <!-- Key status will be populated here -->
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> System Overview</h2>
+                    <div class="header-actions">
+                        <button class="btn btn-primary" onclick="refreshData()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
                 </div>
-                <div id="keyForms">
-                    <!-- Key forms will be populated here -->
+
+                <!-- Key Metrics Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Total P&L</h3>
+                            <div class="metric-value" id="total-pnl">$0.00</div>
+                            <div class="metric-change" id="total-pnl-change">+0.00%</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Daily P&L</h3>
+                            <div class="metric-value" id="daily-pnl">$0.00</div>
+                            <div class="metric-change" id="daily-pnl-change">+0.00%</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Portfolio Value</h3>
+                            <div class="metric-value" id="portfolio-value">$0.00</div>
+                            <div class="metric-change" id="portfolio-change">+0.00%</div>
+                        </div>
+                    </div>
+
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-signal"></i>
+                        </div>
+                        <div class="metric-content">
+                            <h3>Active Signals</h3>
+                            <div class="metric-value" id="active-signals">0</div>
+                            <div class="metric-change">Last: <span id="last-signal">None</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Real-time Data Table -->
+                <div class="data-section">
+                    <div class="section-header">
+                        <h3><i class="fas fa-chart-line"></i> Real-time Market Data</h3>
+                        <div class="data-controls">
+                            <button class="btn btn-sm" onclick="toggleAutoRefresh()">
+                                <i class="fas fa-play" id="auto-refresh-icon"></i>
+                                <span id="auto-refresh-text">Auto Refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Symbol</th>
+                                    <th>Price</th>
+                                    <th>Change</th>
+                                    <th>Volume</th>
+                                    <th>RSI</th>
+                                    <th>BB Position</th>
+                                    <th>Signal</th>
+                                    <th>Last Update</th>
+                                </tr>
+                            </thead>
+                            <tbody id="market-data">
+                                <tr>
+                                    <td colspan="8" class="loading">Loading market data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Trading Panel Section -->
+            <section id="trading" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-trading"></i> Trading Control Panel</h2>
+                    <div class="trading-status" id="trading-status">
+                        <div class="status-badge stopped">
+                            <i class="fas fa-stop-circle"></i>
+                            <span>Stopped</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trading Controls -->
+                <div class="trading-controls">
+                    <div class="control-group">
+                        <h3><i class="fas fa-play-circle"></i> Trading Engine</h3>
+                        <div class="control-buttons">
+                            <button class="btn btn-success" onclick="startTrading()">
+                                <i class="fas fa-play"></i> Start Trading
+                            </button>
+                            <button class="btn btn-danger" onclick="stopTrading()">
+                                <i class="fas fa-stop"></i> Stop Trading
+                            </button>
+                            <button class="btn btn-warning" onclick="emergencyStop()">
+                                <i class="fas fa-exclamation-triangle"></i> Emergency Stop
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-shield-alt"></i> Live Trading Security</h3>
+                        <div class="security-controls">
+                            <button class="btn btn-warning" onclick="showArmDialog()">
+                                <i class="fas fa-key"></i> Arm Live Trading
+                            </button>
+                            <button class="btn btn-secondary" onclick="disarmLiveTrading()">
+                                <i class="fas fa-lock"></i> Disarm Live Trading
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-cogs"></i> Strategy Configuration</h3>
+                        <div class="strategy-controls">
+                            <select id="strategy-select" class="form-select">
+                                <option value="mean_reversion">Mean Reversion</option>
+                                <option value="momentum">Momentum</option>
+                                <option value="news_driven">News Driven</option>
+                            </select>
+                            <button class="btn btn-primary" onclick="changeStrategy()">
+                                <i class="fas fa-sync"></i> Change Strategy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <h3><i class="fas fa-university"></i> Broker Configuration</h3>
+                        <div class="broker-config">
+                            <div class="form-group">
+                                <label for="alpaca-api-key">Alpaca API Key:</label>
+                                <input type="password" id="alpaca-api-key" placeholder="Enter Alpaca API Key" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label for="alpaca-secret-key">Alpaca Secret Key:</label>
+                                <input type="password" id="alpaca-secret-key" placeholder="Enter Alpaca Secret Key" class="form-input">
+                            </div>
+                            <div class="form-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="alpaca-paper-trading" checked>
+                                    <span class="checkmark"></span>
+                                    Paper Trading
+                                </label>
+                            </div>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" onclick="saveAlpacaKeys()">
+                                    <i class="fas fa-save"></i> Save Keys
+                                </button>
+                                <button class="btn btn-secondary" onclick="testAlpacaConnection()">
+                                    <i class="fas fa-plug"></i> Test Connection
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Positions and Orders -->
+                <div class="trading-data">
+                    <div class="data-tabs">
+                        <button class="tab-btn active" data-tab="positions">Positions</button>
+                        <button class="tab-btn" data-tab="orders">Orders</button>
+                        <button class="tab-btn" data-tab="performance">Performance</button>
+                    </div>
+
+                    <div class="tab-content">
+                        <div id="positions-tab" class="tab-pane active">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Symbol</th>
+                                            <th>Quantity</th>
+                                            <th>Avg Price</th>
+                                            <th>Current Price</th>
+                                            <th>P&L</th>
+                                            <th>P&L %</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="positions-table">
+                                        <tr>
+                                            <td colspan="7" class="no-data">No positions</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="orders-tab" class="tab-pane">
+                            <div class="table-container">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Symbol</th>
+                                            <th>Side</th>
+                                            <th>Quantity</th>
+                                            <th>Price</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="orders-table">
+                                        <tr>
+                                            <td colspan="7" class="no-data">No orders</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="performance-tab" class="tab-pane">
+                            <div class="performance-metrics">
+                                <div class="metric-row">
+                                    <span>Total Return:</span>
+                                    <span id="total-return">0.00%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Sharpe Ratio:</span>
+                                    <span id="sharpe-ratio">0.00</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Max Drawdown:</span>
+                                    <span id="max-drawdown">0.00%</span>
+                                </div>
+                                <div class="metric-row">
+                                    <span>Win Rate:</span>
+                                    <span id="win-rate">0.00%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Backtesting Section -->
+            <section id="backtesting" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Strategy Backtesting</h2>
+                    <button class="btn btn-primary" onclick="showBacktestModal()">
+                        <i class="fas fa-play"></i> Run Backtest
+                    </button>
+                </div>
+
+                <div class="backtest-results" id="backtest-results">
+                    <div class="no-results">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>No Backtest Results</h3>
+                        <p>Run a backtest to see strategy performance</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-analytics"></i> Performance Analytics</h2>
+                </div>
+                <div class="analytics-content">
+                    <div class="chart-container">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <div class="section-header">
+                    <h2><i class="fas fa-cog"></i> System Settings</h2>
+                </div>
+                <div class="settings-content">
+                    <div class="settings-group">
+                        <h3>Risk Management</h3>
+                        <div class="setting-item">
+                            <label>Max Position Size (%)</label>
+                            <input type="number" value="1" min="0.1" max="10" step="0.1">
+                        </div>
+                        <div class="setting-item">
+                            <label>Stop Loss (%)</label>
+                            <input type="number" value="2" min="0.1" max="10" step="0.1">
+                        </div>
+                        <div class="setting-item">
+                            <label>Daily Loss Limit (%)</label>
+                            <input type="number" value="3" min="0.1" max="20" step="0.1">
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <!-- Arm Trading Modal -->
+    <div id="arm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-key"></i> Arm Live Trading</h3>
+                <button class="modal-close" onclick="closeArmDialog()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Warning:</strong> This will enable live trading with real money!</p>
+                <div class="form-group">
+                    <label for="arming-key">Enter Arming Key:</label>
+                    <input type="password" id="arming-key" placeholder="Enter arming key" class="form-input">
                 </div>
             </div>
-        </div>
-        
-        <!-- System Settings Modal -->
-        <div id="systemModal" class="modal" style="display: none;">
-            <div class="modal-content">
-                <span class="close" onclick="hideSystemSettings()">&times;</span>
-                <h2>System Settings</h2>
-                
-                <div class="settings-section">
-                    <h3>Data Collection</h3>
-                    <div class="setting-item">
-                        <label for="polling-interval">Polling Interval (seconds):</label>
-                        <input type="number" id="polling-interval" value="60" min="10" max="300">
-                    </div>
-                    <div class="setting-item">
-                        <label for="max-symbols">Max Symbols:</label>
-                        <input type="number" id="max-symbols" value="50" min="1" max="100">
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Storage</h3>
-                    <div class="setting-item">
-                        <label for="retention-days">Data Retention (days):</label>
-                        <input type="number" id="retention-days" value="365" min="30" max="1095">
-                    </div>
-                    <div class="setting-item">
-                        <label for="auto-cleanup">Auto Cleanup:</label>
-                        <input type="checkbox" id="auto-cleanup" checked>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Alerts</h3>
-                    <div class="setting-item">
-                        <label for="error-alerts">Error Alerts:</label>
-                        <input type="checkbox" id="error-alerts" checked>
-                    </div>
-                    <div class="setting-item">
-                        <label for="rate-limit-alerts">Rate Limit Alerts:</label>
-                        <input type="checkbox" id="rate-limit-alerts" checked>
-                    </div>
-                </div>
-                
-                <div class="modal-actions">
-                    <button class="btn btn-primary" onclick="saveSystemSettings()">Save Settings</button>
-                    <button class="btn btn-secondary" onclick="hideSystemSettings()">Cancel</button>
-                </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="armLiveTrading()">
+                    <i class="fas fa-key"></i> Arm Trading
+                </button>
+                <button class="btn btn-secondary" onclick="closeArmDialog()">Cancel</button>
             </div>
         </div>
     </div>
 
+    <!-- Backtest Modal -->
+    <div id="backtest-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-chart-bar"></i> Run Backtest</h3>
+                <button class="modal-close" onclick="closeBacktestModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Strategy:</label>
+                    <select id="backtest-strategy" class="form-select">
+                        <option value="mean_reversion">Mean Reversion</option>
+                        <option value="momentum">Momentum</option>
+                        <option value="news_driven">News Driven</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Symbols (comma-separated):</label>
+                    <input type="text" id="backtest-symbols" placeholder="AAPL,MSFT,GOOGL" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Start Date:</label>
+                    <input type="date" id="backtest-start" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>End Date:</label>
+                    <input type="date" id="backtest-end" class="form-input">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="runBacktest()">
+                    <i class="fas fa-play"></i> Run Backtest
+                </button>
+                <button class="btn btn-secondary" onclick="closeBacktestModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="/static/script.js"></script>
 </body>
 </html>

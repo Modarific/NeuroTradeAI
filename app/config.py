@@ -48,6 +48,30 @@ API_HOST = "localhost"
 API_PORT = 8000
 API_URL = f"http://{API_HOST}:{API_PORT}"
 
+# Trading Configuration
+TRADING_CONFIG = {
+    "mode": "paper",  # paper or live
+    "broker": "simulator",  # simulator or alpaca
+    "default_strategy": "mean_reversion",
+    "polling_interval": 60,  # seconds
+    "risk_limits": {
+        "max_position_size_pct": 1.0,
+        "max_total_exposure_pct": 5.0,
+        "daily_loss_limit_pct": 3.0,
+        "max_positions": 3,
+        "min_avg_volume": 1_000_000,
+        "stop_loss_pct": 2.0,
+        "take_profit_pct": 3.0,
+        "circuit_breaker_losses": 3
+    },
+    "execution": {
+        "default_order_type": "limit",
+        "limit_offset_pct": 0.1,  # offset from mid for limit orders
+        "max_order_retry": 3,
+        "order_timeout_seconds": 300
+    }
+}
+
 # WebSocket Configuration
 WS_URL = f"ws://{API_HOST}:{API_PORT}/stream"
 
